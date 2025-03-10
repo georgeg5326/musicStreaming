@@ -1,4 +1,4 @@
-version: = '3.8'
+version: "3.8"
 
 services:
   #zookeeper:
@@ -9,6 +9,11 @@ services:
       - ALLOW_ANONYMOUS_LOGIN=yes
     ports:
       - "2181:2181"
+    healthcheck:
+      test: "echo stat | nc localhost 2181"
+      interval: 10s
+      timeout: 10s
+      retries: 5
   #kafka:
   kafka:
     image: wurstmeister/kafka:latest
@@ -20,7 +25,31 @@ services:
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
     depends_on:
-      - zookeeper
+      zookeeper:
+        condition: service_healthy
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "kafka-topics.sh",
+          "--list",
+          "--bootstrap-server",
+          "localhost:9092",
+        ]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+    #kafak  exporter
+  kafka-exporter:
+    image: danielqsj/kafka-exporter:latest
+    restart: always
+    ports:
+      - "9308:9308"
+    environment:
+      KAFKA_SERVER: kafka:9092
+    depends_on:
+      kafka:
+        condition: service_healthy
   #spark
   spark:
     image: bitnami/spark:latest
@@ -88,9 +117,18 @@ services:
     image: grafana/grafana:latest
     restart: always
     ports:
-      - "3000:3000"
+      - "3001:3000"
     depends_on:
       - kafka
+
+  # prometheus
+  prometheus:
+    image: prom/prometheus:latest
+    restart: always
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
 
 # to prevent data loss when restarting container
 volumes:
