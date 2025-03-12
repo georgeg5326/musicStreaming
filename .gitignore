@@ -1,0 +1,63 @@
+# Ignore Python cache files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Ignore Airflow logs and SQLite database
+logs/
+airflow.db
+airflow.cfg
+dags/__pycache__/
+plugins/__pycache__/
+
+# Ignore dbt compiled files and logs
+dbt/target/
+dbt/logs/
+dbt/dbt_packages/
+
+# Ignore Spark temporary files
+spark-warehouse/
+metastore_db/
+derby.log
+
+# Ignore PostgreSQL data (Only if using a local DB)
+postgres_data/
+
+# Ignore Docker-related files
+*.log
+*.pid
+*.sock
+.env
+docker-compose.override.yml
+
+# Ignore Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Ignore IDE/editor config files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Ignore data files (Optional)
+*.csv
+*.parquet
+*.json
+*.avro
+storage/raw/
+storage/processed/
+
+# Ignore Terraform files (If using Infrastructure-as-Code)
+.terraform/
+terraform.tfstate
+terraform.tfstate.backup
+
+# Ignore compiled binaries
+bin/
+obj/
+target/
+
+# Ignore Grafana dashboards (if auto-generated)
+grafana/dashboards/
+grafana/data/

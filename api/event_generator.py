@@ -38,8 +38,13 @@ def start_stream():
         producer.send(KAFKA_TOPIC, value=event)
         #print(f"Sent event: {event}")  # Log to console
         time.sleep(random.uniform(0.5, 2))  # Simulated real-time delay
+        producer.flush()
     return {"status": "streaming finished"}
 
+@app.on_event("shutdown")
+def shutdown_event():
+    """Gracefully close the Kafka producer on shutdown."""
+    producer.close()
 
 
 
